@@ -1,9 +1,10 @@
 package sonarfile
 
 import (
-	"errors"
+	"fmt"
+	"net/url"
+	"path"
 	"strconv"
-	"strings"
 )
 
 // SonarFile is the file naming construct used in Sonar data
@@ -15,50 +16,30 @@ type SonarFile struct {
 	Ext         string
 }
 
-// extractExtension splits a filename into the name itself
-// and the extension
-func extractExtension(filename string) (string, string) {
-	nameSplit := strings.SplitN(filename, ".", 2)
-	if len(nameSplit) == 0 {
-		return "", ""
-	}
-
-	if len(nameSplit) < 2 {
-		return nameSplit[0], ""
-	}
-
-	return nameSplit[0], nameSplit[1]
+func (f SonarFile) BuildBaseName() string {
+	portStr := strconv.Itoa(f.Port)
+	return fmt.Sprintf("%s_%s", f.ServiceName, portStr)
 }
 
-// BuildSonarFile constructs a SonarFile from a string
-// Example: 2021-01-06-1609894956-http_get_9200.csv.gz
-func BuildSonarFile(filename string) (SonarFile, error) {
-	fileArray := strings.Split(filename, "-")
-	if len(fileArray) != 5 {
-		return SonarFile{}, errors.New("Invalid format")
-	}
+func (f SonarFile) BuildFullFilename() string {
+	epochStr := strconv.FormatInt(f.Epoch, 10)
+	baseServiceName := f.BuildBaseName()
 
-	date := strings.Join(fileArray[:3], "-")
-	epoch, err := strconv.ParseInt(fileArray[3], 10, 64)
-	if err != nil {
-		return SonarFile{}, err
-	}
+	return fmt.Sprintf(
+		"%s-%s-%s.%s",
+		f.Date,
+		epochStr,
+		baseServiceName,
+		f.Ext,
+	)
+}
 
-	baseName := fileArray[4]
-	baseWithoutExt, ext := extractExtension(baseName)
+// GetFileURL constructs the full URL path to a given sonar data file
+func (f SonarFile) GetFileURL(baseURL string, studyID string) string {
+	targetFilename := f.BuildFullFilename()
 
-	serviceArr := strings.Split(baseWithoutExt, "_")
-	serviceName := strings.Join(serviceArr[:len(serviceArr)-1], "_")
-	port, err := strconv.Atoi(serviceArr[len(serviceArr)-1])
-	if err != nil {
-		return SonarFile{}, err
-	}
+	targetURL, _ := url.Parse(baseURL)
+	targetURL.Path = path.Join(targetURL.Path, studyID, targetFilename)
 
-	return SonarFile{
-		Date:        date,
-		Epoch:       epoch,
-		ServiceName: serviceName,
-		Port:        port,
-		Ext:         ext,
-	}, nil
+	return targetURL.String()
 }
