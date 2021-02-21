@@ -20,7 +20,7 @@ func ListServices(studyID string) ([]string, error) {
 			continue
 		}
 
-		services = append(services, sonarFile.BuildBaseName())
+		services = append(services, sonarFile.GetBaseName())
 	}
 
 	return services, nil

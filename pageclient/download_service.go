@@ -17,7 +17,7 @@ func findMatchingSonarFile(serviceName string, files []string) (sonarfile.SonarF
 			continue
 		}
 
-		if sonarFile.BuildBaseName() == serviceName {
+		if sonarFile.GetBaseName() == serviceName {
 			matchingFile = sonarFile
 			found = true
 		}

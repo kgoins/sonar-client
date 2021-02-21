@@ -16,14 +16,14 @@ type SonarFile struct {
 	Ext         string
 }
 
-func (f SonarFile) BuildBaseName() string {
+func (f SonarFile) GetBaseName() string {
 	portStr := strconv.Itoa(f.Port)
 	return fmt.Sprintf("%s_%s", f.ServiceName, portStr)
 }
 
-func (f SonarFile) BuildFullFilename() string {
+func (f SonarFile) GetFullFilename() string {
 	epochStr := strconv.FormatInt(f.Epoch, 10)
-	baseServiceName := f.BuildBaseName()
+	baseServiceName := f.GetBaseName()
 
 	return fmt.Sprintf(
 		"%s-%s-%s.%s",
@@ -36,7 +36,7 @@ func (f SonarFile) BuildFullFilename() string {
 
 // GetFileURL constructs the full URL path to a given sonar data file
 func (f SonarFile) GetFileURL(baseURL string, studyID string) string {
-	targetFilename := f.BuildFullFilename()
+	targetFilename := f.GetFullFilename()
 
 	targetURL, _ := url.Parse(baseURL)
 	targetURL.Path = path.Join(targetURL.Path, studyID, targetFilename)

@@ -24,3 +24,14 @@ func TestBuildSonarFile(t *testing.T) {
 	rq.NoError(err)
 	rq.Equal(sonarFile, validSonarFile)
 }
+
+func TestSplitServiceName(t *testing.T) {
+	rq := require.New(t)
+	origName := "http_get_9200"
+
+	svcName, port, err := sonarfile.SplitServiceName(origName)
+	rq.NoError(err)
+
+	rq.Equal("http_get", svcName)
+	rq.Equal(9200, port)
+}
