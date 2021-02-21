@@ -31,6 +31,11 @@ func TestNewSonarService(t *testing.T) {
 		Port:      389,
 		Transport: sonarservice.UDP,
 	}
+	testCases["gtp-c_2123"] = sonarservice.SonarService{
+		Name:      "gtp-c",
+		Port:      2123,
+		Transport: sonarservice.NotDef,
+	}
 
 	for k, v := range testCases {
 		out, err := sonarservice.NewSonarService(k)
