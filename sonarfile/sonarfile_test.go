@@ -25,6 +25,13 @@ func TestBuildSonarFile(t *testing.T) {
 		Port:        2123,
 		Ext:         "csv.gz",
 	}
+	testCases["2021-01-04-1609759821-udp_chargen_19.csv.gz"] = sonarfile.SonarFile{
+		Date:        "2021-01-04",
+		Epoch:       1609759821,
+		ServiceName: "chargen",
+		Port:        19,
+		Ext:         "csv.gz",
+	}
 
 	for fileName, expectedSonarFile := range testCases {
 		sonarFile, err := sonarfile.BuildSonarFile(fileName)
