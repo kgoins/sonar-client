@@ -26,6 +26,11 @@ func TestNewSonarService(t *testing.T) {
 		Port:      389,
 		Transport: sonarservice.UDP,
 	}
+	testCases["udp_ldap_starttls_389"] = sonarservice.SonarService{
+		Name:      "ldap_starttls",
+		Port:      389,
+		Transport: sonarservice.UDP,
+	}
 
 	for k, v := range testCases {
 		out, err := sonarservice.NewSonarService(k)
