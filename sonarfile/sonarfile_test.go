@@ -3,7 +3,7 @@ package sonarfile_test
 import (
 	"testing"
 
-	"github.com/kgoins/sonar-client/pageclient"
+	"github.com/kgoins/sonar-client/sonarfile"
 	"github.com/stretchr/testify/require"
 )
 
@@ -11,7 +11,7 @@ func TestBuildSonarFile(t *testing.T) {
 	rq := require.New(t)
 
 	fileName := "2021-01-06-1609894956-http_get_9200.csv.gz"
-	validSonarFile := pageclient.SonarFile{
+	validSonarFile := sonarfile.SonarFile{
 		Date:        "2021-01-06",
 		Epoch:       1609894956,
 		ServiceName: "http_get",
@@ -19,7 +19,7 @@ func TestBuildSonarFile(t *testing.T) {
 		Ext:         "csv.gz",
 	}
 
-	sonarFile, err := pageclient.BuildSonarFile(fileName)
+	sonarFile, err := sonarfile.BuildSonarFile(fileName)
 
 	rq.NoError(err)
 	rq.Equal(sonarFile, validSonarFile)
