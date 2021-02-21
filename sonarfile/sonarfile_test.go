@@ -39,3 +39,37 @@ func TestBuildSonarFile(t *testing.T) {
 		rq.Equal(expectedSonarFile, sonarFile)
 	}
 }
+
+func TestGetBaseName(t *testing.T) {
+	rq := require.New(t)
+
+	testFile := sonarfile.SonarFile{
+		Date:        "2021-01-04",
+		Epoch:       1609759821,
+		ServiceName: "chargen",
+		Port:        19,
+		Ext:         "csv.gz",
+	}
+
+	expected := "udp_chargen_19"
+	filename := testFile.GetBaseName()
+
+	rq.Equal(expected, filename)
+}
+
+func TestGetFullFilename(t *testing.T) {
+	rq := require.New(t)
+
+	testFile := sonarfile.SonarFile{
+		Date:        "2021-01-04",
+		Epoch:       1609759821,
+		ServiceName: "chargen",
+		Port:        19,
+		Ext:         "csv.gz",
+	}
+
+	expected := "2021-01-04-1609759821-udp_chargen_19.csv.gz"
+	filename := testFile.GetFullFilename()
+
+	rq.Equal(expected, filename)
+}
