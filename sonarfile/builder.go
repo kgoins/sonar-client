@@ -26,7 +26,7 @@ func extractExtension(filename string) (string, string) {
 // BuildSonarFile constructs a SonarFile from a string
 // Example: 2021-01-06-1609894956-http_get_9200.csv.gz
 func BuildSonarFile(filename string) (SonarFile, error) {
-	fileArray := strings.Split(filename, "-")
+	fileArray := strings.SplitN(filename, "-", 5)
 	if len(fileArray) != 5 {
 		return SonarFile{}, errors.New("Invalid format")
 	}
