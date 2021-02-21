@@ -5,20 +5,20 @@ import (
 	"net/url"
 	"path"
 	"strconv"
+
+	"github.com/kgoins/sonar-client/sonarservice"
 )
 
 // SonarFile is the file naming construct used in Sonar data
 type SonarFile struct {
-	Date        string
-	Epoch       int64
-	ServiceName string
-	Port        int
-	Ext         string
+	Date  string
+	Epoch int64
+	Ext   string
+	sonarservice.SonarService
 }
 
 func (f SonarFile) GetBaseName() string {
-	portStr := strconv.Itoa(f.Port)
-	return fmt.Sprintf("%s_%s", f.ServiceName, portStr)
+	return f.SonarService.ToString()
 }
 
 func (f SonarFile) GetFullFilename() string {

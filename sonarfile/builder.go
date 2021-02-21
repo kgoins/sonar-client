@@ -46,10 +46,9 @@ func BuildSonarFile(filename string) (SonarFile, error) {
 	}
 
 	return SonarFile{
-		Date:        date,
-		Epoch:       epoch,
-		ServiceName: service.Name,
-		Port:        service.Port,
-		Ext:         ext,
+		Date:         date,
+		Epoch:        epoch,
+		Ext:          ext,
+		SonarService: service,
 	}, nil
 }

@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 
 	"github.com/kgoins/sonar-client/pageclient"
+	"github.com/kgoins/sonar-client/sonarservice"
 	"github.com/spf13/cobra"
 )
 
@@ -15,12 +16,17 @@ var downloadCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		studyID := args[0]
-		service := args[1]
+		serviceStr := args[1]
+
+		service, err := sonarservice.NewSonarService(serviceStr)
+		if err != nil {
+			log.Fatalln("Invalid service name")
+		}
 
 		cwd, _ := os.Getwd()
 		outFilePath := filepath.Join(
 			cwd,
-			service,
+			serviceStr,
 		)
 
 		outfile, _ := cmd.Flags().GetString("outfile")
@@ -28,7 +34,7 @@ var downloadCmd = &cobra.Command{
 			outFilePath = outfile
 		}
 
-		err := pageclient.DownloadServiceData(studyID, service, outFilePath)
+		err = pageclient.DownloadServiceData(studyID, service, outFilePath)
 		if err != nil {
 			log.Fatalln(err.Error())
 		}
