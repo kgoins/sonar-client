@@ -4,34 +4,86 @@ import (
 	"testing"
 
 	"github.com/kgoins/sonar-client/sonarfile"
+	"github.com/kgoins/sonar-client/sonarservice"
 	"github.com/stretchr/testify/require"
 )
 
 func TestBuildSonarFile(t *testing.T) {
 	rq := require.New(t)
+	testCases := make(map[string]sonarfile.SonarFile)
 
-	fileName := "2021-01-06-1609894956-http_get_9200.csv.gz"
-	validSonarFile := sonarfile.SonarFile{
-		Date:        "2021-01-06",
-		Epoch:       1609894956,
-		ServiceName: "http_get",
-		Port:        9200,
-		Ext:         "csv.gz",
+	testCases["2021-01-06-1609894956-http_get_9200.csv.gz"] = sonarfile.SonarFile{
+		Date:  "2021-01-06",
+		Epoch: 1609894956,
+		Ext:   "csv.gz",
+		SonarService: sonarservice.SonarService{
+			Name: "http_get",
+			Port: 9200,
+		},
+	}
+	testCases["2021-01-04-1609768117-gtp-c_2123.csv.gz"] = sonarfile.SonarFile{
+		Date:  "2021-01-04",
+		Epoch: 1609768117,
+		Ext:   "csv.gz",
+		SonarService: sonarservice.SonarService{
+			Name: "gtp-c",
+			Port: 2123,
+		},
+	}
+	testCases["2021-01-04-1609759821-udp_chargen_19.csv.gz"] = sonarfile.SonarFile{
+		Date:  "2021-01-04",
+		Epoch: 1609759821,
+		Ext:   "csv.gz",
+		SonarService: sonarservice.SonarService{
+			Name:      "chargen",
+			Port:      19,
+			Transport: sonarservice.UDP,
+		},
 	}
 
-	sonarFile, err := sonarfile.BuildSonarFile(fileName)
-
-	rq.NoError(err)
-	rq.Equal(sonarFile, validSonarFile)
+	for fileName, expectedSonarFile := range testCases {
+		sonarFile, err := sonarfile.BuildSonarFile(fileName)
+		rq.NoError(err)
+		rq.Equal(expectedSonarFile, sonarFile)
+	}
 }
 
-func TestSplitServiceName(t *testing.T) {
+func TestGetBaseName(t *testing.T) {
 	rq := require.New(t)
-	origName := "http_get_9200"
 
-	svcName, port, err := sonarfile.SplitServiceName(origName)
-	rq.NoError(err)
+	testFile := sonarfile.SonarFile{
+		Date:  "2021-01-04",
+		Epoch: 1609759821,
+		Ext:   "csv.gz",
+		SonarService: sonarservice.SonarService{
+			Name:      "chargen",
+			Port:      19,
+			Transport: sonarservice.UDP,
+		},
+	}
 
-	rq.Equal("http_get", svcName)
-	rq.Equal(9200, port)
+	expected := "udp_chargen_19"
+	filename := testFile.GetBaseName()
+
+	rq.Equal(expected, filename)
+}
+
+func TestGetFullFilename(t *testing.T) {
+	rq := require.New(t)
+
+	testFile := sonarfile.SonarFile{
+		Date:  "2021-01-04",
+		Epoch: 1609759821,
+		Ext:   "csv.gz",
+		SonarService: sonarservice.SonarService{
+			Name:      "chargen",
+			Port:      19,
+			Transport: sonarservice.UDP,
+		},
+	}
+
+	expected := "2021-01-04-1609759821-udp_chargen_19.csv.gz"
+	filename := testFile.GetFullFilename()
+
+	rq.Equal(expected, filename)
 }

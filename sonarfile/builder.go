@@ -4,6 +4,8 @@ import (
 	"errors"
 	"strconv"
 	"strings"
+
+	"github.com/kgoins/sonar-client/sonarservice"
 )
 
 // extractExtension splits a filename into the name itself
@@ -21,21 +23,10 @@ func extractExtension(filename string) (string, string) {
 	return nameSplit[0], nameSplit[1]
 }
 
-// SplitServiceName will extract the base service
-// and port from a Sonar service name
-func SplitServiceName(fullServiceName string) (string, int, error) {
-	serviceArr := strings.Split(fullServiceName, "_")
-
-	serviceName := strings.Join(serviceArr[:len(serviceArr)-1], "_")
-	port, err := strconv.Atoi(serviceArr[len(serviceArr)-1])
-
-	return serviceName, port, err
-}
-
 // BuildSonarFile constructs a SonarFile from a string
 // Example: 2021-01-06-1609894956-http_get_9200.csv.gz
 func BuildSonarFile(filename string) (SonarFile, error) {
-	fileArray := strings.Split(filename, "-")
+	fileArray := strings.SplitN(filename, "-", 5)
 	if len(fileArray) != 5 {
 		return SonarFile{}, errors.New("Invalid format")
 	}
@@ -49,16 +40,15 @@ func BuildSonarFile(filename string) (SonarFile, error) {
 	baseName := fileArray[4]
 	baseWithoutExt, ext := extractExtension(baseName)
 
-	serviceName, port, err := SplitServiceName(baseWithoutExt)
+	service, err := sonarservice.NewSonarService(baseWithoutExt)
 	if err != nil {
 		return SonarFile{}, err
 	}
 
 	return SonarFile{
-		Date:        date,
-		Epoch:       epoch,
-		ServiceName: serviceName,
-		Port:        port,
-		Ext:         ext,
+		Date:         date,
+		Epoch:        epoch,
+		Ext:          ext,
+		SonarService: service,
 	}, nil
 }
